@@ -1,10 +1,17 @@
-const ColorDisplay = () => {
+const ColorDisplay = ({newColor}) => {
   return (
-     <div className="display">
-        <p>Empty Value</p>
-    </div>
+     <section 
+     className="display"
+     style= {{backgroundColor: newColor}}
+     >
+        <p>{newColor ? newColor : "Empty Value"}</p>
+    </section>
       
   )
+}
+
+ColorDisplay.defaultProps ={
+  newColor: "Empty Color Value"
 }
 
 export default ColorDisplay

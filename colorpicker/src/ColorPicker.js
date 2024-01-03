@@ -1,7 +1,16 @@
-const ColorPicker = () => {
+const ColorPicker = ({newColor, setNewColor}) => {
   return (
-    <input className="picker" type="text" placeholder="Add color name here..."/> 
-    
+    <form onSubmit={(e) => e.preventDefault()}>
+      <label>Add Color Name:</label>
+      <input 
+        autofocus
+        type="text"
+        placeholder="Add color name"
+        required
+        value={newColor}
+        onChange={(e)=> setNewColor(e.target.value)}
+        />
+    </form> 
   )
 }
 
