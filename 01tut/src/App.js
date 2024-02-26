@@ -6,15 +6,36 @@ import AddItem from './AddItem';
 import SearchItem from './SearchItem';
 
 function App() {
+const API_URL = 'http://localhost:3500/items';
 
-  const [items, setItems] = useState(JSON.parse(localStorage.getItem('shoppinglist')));
+  const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('')
   const [search, setSearch] = useState('')
+  const [fetchError, setFetchError] = useState(null);
+  const [isLoading, setisLoading] = useState(true);
 
-  const setAndSaveItems = (newItems) => {
-    setItems(newItems);
-    localStorage.setItem('shoppinglist', JSON.stringify(newItems));
-  }
+  useEffect(() => {
+
+    const fetchItems = async () => {
+      try{
+        const response = await fetch(API_URL)
+        if (!response.ok) throw Error('Did not received expected data');
+        const listItems = await response.json();
+        setItems(listItems);
+        setFetchError(null);
+      } catch(err) {
+        console.log(err.message)
+        setFetchError(err.message);
+      } finally {
+        setisLoading(false);
+      }
+    }
+    setTimeout(() => {
+      (async ()=> await fetchItems())();
+    }, 2000)
+
+    (async () => await fetchItems())()
+  }, [])
 
   const addItem = (item) => {
     const id = items.length ? items[items.length - 1].id + 1 : 1;
@@ -53,11 +74,15 @@ function App() {
         search={search}
         setSearch= {setSearch}
       />
-      <Content 
-        items= {items.filter(item => ((item.item).toLowerCase()).includes(search.toLowerCase()))}
-        handleCheck = {handleCheck}
-        handleDelete = {handleDelete}
-      />
+      <main>
+        {isLoading && <p>Loading Items...</p>}
+        {fetchError && <p style={{color: "red"}}>{`Error: ${fetchError}`}</p>}
+        {!fetchError && !isLoading && <Content 
+          items= {items.filter(item => ((item.item).toLowerCase()).includes(search.toLowerCase()))}
+          handleCheck = {handleCheck}
+          handleDelete = {handleDelete}
+        />}
+      </main>
       <Footer length={items.length} />
     </div>
   );
